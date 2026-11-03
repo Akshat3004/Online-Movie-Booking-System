@@ -1,19 +1,20 @@
 <?php
-/*if (!session_id()) {
-	# code...
-	session_start();
-}*/
+// Local development database configuration. Do not commit real credentials.
+$host = getenv('DB_HOST') ?: '127.0.0.1';
+$username = getenv('DB_USER') ?: 'root';
+$password = getenv('DB_PASSWORD');
+if ($password === false) {
+    $password = '';
+}
+$db_name = getenv('DB_NAME') ?: 'iwp';
 
-$host="localhost";
-$username="root";
-$password="peace111";
-$db_name="iwp";
-// Create connection
-$db = new mysqli($host, $username, $password,$db_name);
-// Check connection
-if ($db->connect_error) {
-	die("Connection failed: " . $db->connect_error);
-} else{
-
+mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+try {
+    $db = new mysqli($host, $username, $password, $db_name);
+    $db->set_charset('utf8mb4');
+} catch (mysqli_sql_exception $exception) {
+    error_log('Movie booking database connection failed: ' . $exception->getMessage());
+    http_response_code(500);
+    exit('Database connection is unavailable.');
 }
 ?>
